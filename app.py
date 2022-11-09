@@ -47,7 +47,7 @@ def prediction():
     return jsonify(
         {
             "status": "ok",
-            "metrics": metrics.to_dict(),
+            "metrics": metrics.to_dict("tight"),
             "forecast": forecast.to_dict("records"),
         }
     )
