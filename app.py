@@ -41,6 +41,9 @@ def prediction():
 
     forecast = model.predict(df)
 
+    # Convert time to unix timestamp
+    # forecast["ds"] = forecast["ds"].astype(int) / 10**9
+
     return jsonify(
         {
             "status": "ok",
