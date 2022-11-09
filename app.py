@@ -25,6 +25,8 @@ def prediction():
     dataset = payload["dataset"]
     configuration = payload["configuration"]
 
+    epochs = configuration.get("training", {}).get("epochs", None)
+
     df = pandas.DataFrame(dataset)
     print(df.dtypes)
     print(df.head())
@@ -34,7 +36,7 @@ def prediction():
     df["ds"] = pandas.to_datetime(df["ds"])
     df["y"] = pandas.to_numeric(df["y"])
 
-    model = NeuralProphet(epochs=1)
+    model = NeuralProphet(epochs=epochs)
     metrics = model.fit(df, freq="D")
 
     forecast = model.predict(df)
