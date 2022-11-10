@@ -1,10 +1,9 @@
-FROM python:3.10-slim
+FROM public.ecr.aws/lambda/python:3.9
 
-WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt  .
+RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-COPY . .
+COPY app.py ${LAMBDA_TASK_ROOT}
 
-RUN ["gunicorn app:app"]
+CMD ["gunicorn app:app"]
