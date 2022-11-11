@@ -40,6 +40,9 @@ def prediction():
     configuration = payload["configuration"]
 
     epochs = configuration.get("training", {}).get("epochs", None)
+    # Map "auto" for epochs back to None... else it all fails
+    if epochs == "auto":
+        epochs = None
 
     df = pandas.DataFrame(dataset)
     print(df.dtypes)
