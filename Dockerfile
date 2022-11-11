@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -7,6 +7,6 @@ RUN pip3 install -r requirements.txt
 
 COPY app.py /app
 
-EXPOSE 80
+EXPOSE 5000
 
-CMD ["gunicorn", "-b", "0.0.0.0:80", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
