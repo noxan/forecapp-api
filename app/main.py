@@ -1,7 +1,21 @@
 import pandas
-from flask import Flask, request, jsonify
-from neuralprophet import NeuralProphet, set_log_level
+import sentry_sdk
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from neuralprophet import NeuralProphet, set_log_level
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
+    integrations=[
+        FlaskIntegration(),
+    ],
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+)
+
 
 set_log_level("ERROR")
 
