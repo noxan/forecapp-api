@@ -39,6 +39,8 @@ def prediction():
     dataset = payload["dataset"]
     configuration = payload["configuration"]
 
+    print("model configuration", configuration)
+
     epochs = configuration.get("training", {}).get("epochs", None)
     # Map "auto" for epochs back to None... else it all fails
     if epochs == "auto":
@@ -54,6 +56,12 @@ def prediction():
     df["y"] = pandas.to_numeric(df["y"])
 
     model = NeuralProphet(epochs=epochs)
+
+    if "countryHolidays" in configuration:
+        for country in configuration["countryHolidays"]:
+            print("Add country holidays for", country)
+            model = model.add_country_holidays(country_name=country)
+
     metrics = model.fit(df, freq="D")
 
     forecast = model.predict(df)
