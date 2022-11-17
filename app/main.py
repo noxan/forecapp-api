@@ -68,9 +68,12 @@ def prediction():
         name = lagged_regressor["dataColumnRef"]
         print("Add lagged regressor", name)
         df[name] = pandas.to_numeric(df[name])
+        n_lags = lagged_regressor.get("n_lags", "auto")
+        if n_lags != "auto" and n_lags != "scalar":
+            n_lags = int(n_lags)
         model = model.add_lagged_regressor(
             name,
-            lagged_regressor.get("n_lags", "auto"),
+            n_lags,
             lagged_regressor.get("regularization", None),
             lagged_regressor.get("normalize", "auto"),
         )
