@@ -52,7 +52,8 @@ def prediction():
 
     # TODO: those transforms should not be necessary in the future
     df = df.dropna()
-    df["ds"] = pandas.to_datetime(df["ds"])
+    df["ds"] = pandas.to_datetime(df["ds"], utc=True)
+    df["ds"] = df["ds"].dt.tz_localize(None)
     df["y"] = pandas.to_numeric(df["y"])
 
     model = NeuralProphet(epochs=epochs)
