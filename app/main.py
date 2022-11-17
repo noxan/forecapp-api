@@ -1,4 +1,5 @@
 import pandas
+import numpy as np
 import sentry_sdk
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -84,7 +85,7 @@ def prediction():
     return jsonify(
         {
             "status": "ok",
-            "metrics": metrics.to_dict("tight"),
-            "forecast": forecast.to_dict("records"),
+            "metrics": metrics.replace({np.nan: None}).to_dict("tight"),
+            "forecast": forecast.replace({np.nan: None}).to_dict("records"),
         }
     )
