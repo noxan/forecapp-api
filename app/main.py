@@ -63,6 +63,17 @@ def prediction():
             print("Add country holidays for", country)
             model = model.add_country_holidays(country_name=country)
 
+    for lagged_regressor in configuration.get("laggedRegressors", []):
+        name = lagged_regressor["dataColumnRef"]
+        print("Add lagged regressor", name)
+        df[name] = pandas.to_numeric(df[name])
+        model = model.add_lagged_regressor(
+            name,
+            lagged_regressor.get("n_lags", "auto"),
+            lagged_regressor.get("regularization", None),
+            lagged_regressor.get("normalize", "auto"),
+        )
+
     metrics = model.fit(df, freq="D")
 
     forecast = model.predict(df)
