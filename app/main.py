@@ -53,7 +53,14 @@ def prediction():
 
     # TODO: those transforms should not be necessary in the future
     df = df.dropna()
-    df["ds"] = pandas.to_datetime(df["ds"])
+
+    # Test for unix timestamp
+    try:
+        int(df["ds"][0])
+    except ValueError:
+        df["ds"] = pandas.to_datetime(df["ds"])
+    else:
+        df["ds"] = pandas.to_datetime(df["ds"], unit="s")
     df["ds"] = df["ds"].dt.tz_localize(None)
     df["y"] = pandas.to_numeric(df["y"])
 
