@@ -49,7 +49,12 @@ def prediction():
 
     df = parse_dataset(payload["dataset"])
 
-    model = NeuralProphet(epochs=epochs)  # , n_forecasts=forecasts)
+    model = NeuralProphet(
+        epochs=epochs,
+        n_lags=ar_lags,
+        ar_reg=ar_regularization,
+        n_forecasts=forecasts if ar_lags > 0 else 1,
+    )
 
     if "countryHolidays" in configuration:
         for country in configuration["countryHolidays"]:
