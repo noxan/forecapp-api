@@ -6,6 +6,9 @@ from flask_cors import CORS
 from neuralprophet import NeuralProphet, set_log_level
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+from .configuration import parse_configuration
+from .dataset import parse_dataset
+
 sentry_sdk.init(
     dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
     integrations=[
@@ -43,32 +46,9 @@ def prediction():
     configuration = payload["configuration"]
 
     print("model configuration", configuration)
+    epochs, forecasts = parse_configuration(configuration)
 
-    epochs = configuration.get("training", {}).get("epochs", None)
-    # Map "auto" for epochs back to None... else it all fails
-    if epochs == "auto":
-        epochs = None
-    elif epochs:
-        epochs = int(epochs)
-
-    df = pandas.DataFrame(dataset)
-    print(df.dtypes)
-    print(df.head())
-
-    # TODO: those transforms should not be necessary in the future
-    df = df.dropna()
-
-    # Test for unix timestamp
-    try:
-        int(df["ds"][0])
-    except ValueError:
-        df["ds"] = pandas.to_datetime(df["ds"], utc=True, errors="coerce")
-    else:
-        df["ds"] = pandas.to_datetime(df["ds"], unit="s", utc=True, errors="coerce")
-    df["ds"] = df["ds"].dt.tz_localize(None)
-    df["y"] = pandas.to_numeric(df["y"])
-
-    forecasts = int(configuration.get("forecasts", 1))
+    df = parse_dataset(dataset)
 
     model = NeuralProphet(epochs=epochs)  # , n_forecasts=forecasts)
 
