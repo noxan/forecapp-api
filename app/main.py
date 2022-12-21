@@ -74,7 +74,10 @@ def prediction():
             lagged_regressor.get("normalize", "auto"),
         )
 
-    metrics = model.fit(df)  # , freq="D")
+    metrics = model.fit(
+        df,
+        checkpointing=False,
+    )  # , freq="D")
 
     df_future = model.make_future_dataframe(
         df, periods=forecasts, n_historic_predictions=True
