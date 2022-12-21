@@ -42,13 +42,12 @@ def prediction():
     if "configuration" not in payload:
         return jsonify({"error": "model configuration is missing"}), 400
 
-    dataset = payload["dataset"]
     configuration = payload["configuration"]
 
     print("model configuration", configuration)
     epochs, forecasts = parse_configuration(configuration)
 
-    df = parse_dataset(dataset)
+    df = parse_dataset(payload["dataset"])
 
     model = NeuralProphet(epochs=epochs)  # , n_forecasts=forecasts)
 
