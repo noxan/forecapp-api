@@ -46,6 +46,8 @@ def prediction():
     # Map "auto" for epochs back to None... else it all fails
     if epochs == "auto":
         epochs = None
+    elif epochs:
+        epochs = int(epochs)
 
     df = pandas.DataFrame(dataset)
     print(df.dtypes)
@@ -64,7 +66,9 @@ def prediction():
     df["ds"] = df["ds"].dt.tz_localize(None)
     df["y"] = pandas.to_numeric(df["y"])
 
-    model = NeuralProphet(epochs=epochs, n_forecasts=configuration.get("nForecasts", 1))
+    forecasts = int(configuration.get("forecasts", 1))
+
+    model = NeuralProphet(epochs=epochs)  # , n_forecasts=forecasts)
 
     if "countryHolidays" in configuration:
         for country in configuration["countryHolidays"]:
@@ -85,9 +89,13 @@ def prediction():
             lagged_regressor.get("normalize", "auto"),
         )
 
-    metrics = model.fit(df, freq="D")
+    metrics = model.fit(df)  # , freq="D")
 
-    forecast = model.predict(df)
+    df_future = model.make_future_dataframe(
+        df, periods=forecasts, n_historic_predictions=True
+    )
+
+    forecast = model.predict(df_future)
 
     # Convert time to unix timestamp
     # forecast["ds"] = forecast["ds"].astype(int) / 10**9
@@ -97,5 +105,6 @@ def prediction():
             "status": "ok",
             "metrics": metrics.replace({np.nan: None}).to_dict(),
             "forecast": forecast.replace({np.nan: None}).to_dict("records"),
+            "future": df_future.replace({np.nan: None}).to_dict("records"),
         }
     )
