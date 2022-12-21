@@ -56,10 +56,9 @@ def prediction():
         n_forecasts=forecasts if ar_lags > 0 else 1,
     )
 
-    if "countryHolidays" in configuration:
-        for country in configuration["countryHolidays"]:
-            print("Add country holidays for", country)
-            model = model.add_country_holidays(country_name=country)
+    if "holidays" in configuration and len(configuration["holidays"]) > 0:
+        print("Add country holidays for", configuration["holidays"])
+        model = model.add_country_holidays(configuration["holidays"])
 
     for lagged_regressor in configuration.get("laggedRegressors", []):
         name = lagged_regressor["dataColumnRef"]
