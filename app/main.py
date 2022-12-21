@@ -45,7 +45,7 @@ def prediction():
     configuration = payload["configuration"]
 
     print("model configuration", configuration)
-    epochs, forecasts = parse_configuration(configuration)
+    epochs, forecasts, ar_lags, ar_regularization = parse_configuration(configuration)
 
     df = parse_dataset(payload["dataset"])
 
