@@ -32,6 +32,8 @@ def hello_world():
 @app.route("/prediction", methods=["POST"])
 def prediction():
     payload = request.get_json(force=True)
+    if not payload:
+        return jsonify({"error": "invalid payload"}), 400
     if "dataset" not in payload:
         return jsonify({"error": "dataset is missing"}), 400
     if "configuration" not in payload:
