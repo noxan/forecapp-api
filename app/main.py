@@ -58,13 +58,13 @@ def prediction():
     try:
         int(df["ds"][0])
     except ValueError:
-        df["ds"] = pandas.to_datetime(df["ds"])
+        df["ds"] = pandas.to_datetime(df["ds"], utc=True, errors="coerce")
     else:
-        df["ds"] = pandas.to_datetime(df["ds"], unit="s")
+        df["ds"] = pandas.to_datetime(df["ds"], unit="s", utc=True, errors="coerce")
     df["ds"] = df["ds"].dt.tz_localize(None)
     df["y"] = pandas.to_numeric(df["y"])
 
-    model = NeuralProphet(epochs=epochs)
+    model = NeuralProphet(epochs=epochs, n_forecasts=configuration.get("nForecasts", 1))
 
     if "countryHolidays" in configuration:
         for country in configuration["countryHolidays"]:
@@ -95,7 +95,7 @@ def prediction():
     return jsonify(
         {
             "status": "ok",
-            "metrics": metrics.replace({np.nan: None}).to_dict("tight"),
+            "metrics": metrics.replace({np.nan: None}).to_dict(),
             "forecast": forecast.replace({np.nan: None}).to_dict("records"),
         }
     )
