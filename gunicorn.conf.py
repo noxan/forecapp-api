@@ -10,5 +10,5 @@ loglevel = "info"
 # Workers
 workers = 1
 
-graceful_timeout = 120
-timeout = 60
+graceful_timeout = 180
+timeout = 120
