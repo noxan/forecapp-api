@@ -96,6 +96,5 @@ def prediction():
             "status": "ok",
             "metrics": metrics.replace({np.nan: None}).to_dict(),
             "forecast": forecast.replace({np.nan: None}).to_dict("records"),
-            "future": df_future.replace({np.nan: None}).to_dict("records"),
         }
     )
