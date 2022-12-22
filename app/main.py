@@ -45,7 +45,9 @@ def prediction():
     configuration = payload["configuration"]
 
     print("model configuration", configuration)
-    epochs, forecasts, ar_lags, ar_regularization = parse_configuration(configuration)
+    epochs, early_stopping, forecasts, ar_lags, ar_regularization = parse_configuration(
+        configuration
+    )
 
     df = parse_dataset(payload["dataset"])
 
@@ -77,7 +79,7 @@ def prediction():
     metrics = model.fit(
         df,
         checkpointing=False,
-        early_stopping=True,
+        early_stopping=early_stopping,
     )  # , freq="D")
 
     df_future = model.make_future_dataframe(

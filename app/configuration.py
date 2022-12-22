@@ -14,4 +14,6 @@ def parse_configuration(configuration):
     ar_lags = int(ar_config.get("lags", 0))
     ar_regularization = float(ar_config.get("regularization", 0))
 
-    return epochs, forecasts, ar_lags, ar_regularization
+    early_stopping = configuration.get("training", {}).get("earlyStopping", True)
+
+    return epochs, early_stopping, forecasts, ar_lags, ar_regularization
