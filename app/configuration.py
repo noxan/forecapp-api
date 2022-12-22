@@ -5,6 +5,8 @@ def parse_configuration(configuration):
         epochs = None
     elif epochs:
         epochs = int(epochs)
+    else:
+        epochs = None
 
     forecasts = int(configuration.get("forecasts", 1))
 
