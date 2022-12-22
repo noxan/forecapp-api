@@ -8,7 +8,7 @@ capture_output = True
 loglevel = "info"
 
 # Workers
-workers = 3
+workers = 1
 
 graceful_timeout = 120
 timeout = 30
