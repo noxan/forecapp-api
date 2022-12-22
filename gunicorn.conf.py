@@ -6,3 +6,9 @@ errorlog = "/var/log/gunicorn.error.log"
 capture_output = True
 # How verbose the Gunicorn error logs should be
 loglevel = "info"
+
+# Workers
+workers = 3
+
+graceful_timeout = 120
+timeout = 30
