@@ -77,6 +77,7 @@ def prediction():
     metrics = model.fit(
         df,
         checkpointing=False,
+        early_stopping=True,
     )  # , freq="D")
 
     df_future = model.make_future_dataframe(
