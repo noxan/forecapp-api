@@ -89,7 +89,6 @@ def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
 
     return {
         "status": "ok",
-        "config": config,
         "forecast": df_fcst.to_dict(),
         "metrics": metrics.to_dict(),
     }
