@@ -77,7 +77,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     print(df.dtypes)
 
     m = NeuralProphet(
-        n_forecasts=config.forecasts,
+        n_forecasts=config.forecasts if config.autoregression.lags > 0 else 1,
         n_lags=config.autoregression.lags,
         yearly_seasonality=config.yearly_seasonality,
         epochs=3,
