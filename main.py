@@ -90,18 +90,19 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
 
     fcst = m.predict(df)
     print("fcst", fcst.columns)
-    # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
-    # Values n_lags+: ds, y, yhat1, yhat2, ar1, ar2, trend, season_weekly, season_daily
 
+    # TODO: Map all dataframes to the same format (best with proper names already)
     if is_autoregression:
+        # Values n_lags+: ds, y, yhat1, yhat2, ..., ar1, ar2, ..., trend, season_weekly, season_daily
         # Values latest: ds, y, origin0
         df_fcst = m.get_latest_forecast(fcst)
         print("df_fcst", df_fcst.columns)
     else:
+        # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
         df_fcst = fcst
 
     return {
         "status": "ok",
-        "forecast": fcst.replace({np.nan: None}).to_dict(),
+        "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
     }
