@@ -1,8 +1,16 @@
 import pandas as pd
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, np_types, set_log_level
 from pydantic import BaseModel, Extra
+
+sentry_sdk.init(
+    dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
+    # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=1.0,
+)
 
 set_log_level("WARNING")
 
