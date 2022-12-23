@@ -12,6 +12,10 @@ class Dataset(BaseModel):
     __root__: list[DatasetItem] = Field(..., min_items=1)
 
 
+class TrendConfig(BaseModel):
+    growth: np_types.GrowthMode = "linear"
+
+
 class TrainingConfig(CamelModel):
     epochs: int | None = None
     learning_rate: float | None = None
@@ -35,6 +39,7 @@ class SeasonalityConfig(BaseModel):
 class ModelConfig(BaseModel):
     forecasts: int = 1
     frequency: str = "auto"
+    trend: TrendConfig = TrendConfig()
     autoregression: AutoregressionConfig = AutoregressionConfig()
     seasonality: SeasonalityConfig = SeasonalityConfig()
     training: TrainingConfig = TrainingConfig()
