@@ -40,7 +40,7 @@ class ModelConfig(BaseModel):
     frequency: str = "auto"
     autoregression: AutoregressionConfig = AutoregressionConfig()
     yearly_seasonality: np_types.SeasonalityArgument = False
-    training: TrainingConfig
+    training: TrainingConfig = TrainingConfig()
 
 
 app = FastAPI()
