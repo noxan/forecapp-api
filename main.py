@@ -1,8 +1,9 @@
 import pandas as pd
 from fastapi import FastAPI
+from neuralprophet import NeuralProphet, np_types, set_log_level
 from pydantic import BaseModel
 
-from neuralprophet import NeuralProphet, np_types
+set_log_level("WARNING")
 
 
 class TrainingConfig(BaseModel):
