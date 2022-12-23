@@ -8,7 +8,7 @@ class TrainingConfig(BaseModel):
     epochs: int | None = None
 
 
-class ModelConfiguration(BaseModel):
+class ModelConfig(BaseModel):
     forecasts: int = 1
     autoregression_lags: int = 0
     yearly_seasonality: np_types.SeasonalityArgument = False
@@ -24,14 +24,14 @@ def read_root():
 
 
 @app.post("/prediction")
-def prediction(dataset: list, configuration: ModelConfiguration):
+def prediction(dataset: list, config: ModelConfig):
     print(dataset)
-    print(configuration)
+    print(config)
 
     m = NeuralProphet(
-        n_forecasts=configuration.forecasts,
-        n_lags=configuration.autoregression_lags,
-        yearly_seasonality=configuration.yearly_seasonality,
+        n_forecasts=config.forecasts,
+        n_lags=config.autoregression_lags,
+        yearly_seasonality=config.yearly_seasonality,
     )
 
-    return {"status": "ok", "configuration": configuration}
+    return {"status": "ok", "config": config}
