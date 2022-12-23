@@ -26,8 +26,9 @@ def read_root():
 
 
 @app.post("/prediction")
-def prediction(dataset: list, config: ModelConfig):
+def prediction(dataset: list, configuration: ModelConfig):
     print(dataset)
+    config = configuration
     print(config)
 
     df = pd.DataFrame(dataset)
