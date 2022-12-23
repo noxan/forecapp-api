@@ -2,3 +2,4 @@ fastapi==0.88.0
 uvicorn[standard]==0.20.0
 neuralprophet==0.5.0
 sentry-sdk[fastapi]==1.10.1
+gunicorn==20.1.0
