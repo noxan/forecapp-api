@@ -6,6 +6,11 @@ from pydantic import BaseModel
 set_log_level("WARNING")
 
 
+class DatasetItem(BaseModel):
+    ds: str | int
+    y: str | float | int
+
+
 class TrainingConfig(BaseModel):
     epochs: int | None = None
 
@@ -26,7 +31,7 @@ def read_root():
 
 
 @app.post("/prediction")
-def prediction(dataset: list, configuration: ModelConfig):
+def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
     config = configuration
     print("dataset", len(dataset))
     print(config)
