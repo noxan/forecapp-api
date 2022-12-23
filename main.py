@@ -30,10 +30,15 @@ class TrainingConfig(BaseModel):
     epochs: int | None = None
 
 
+class AutoregressionConfig(BaseModel):
+    lags: int = 0
+    regularization: float = 0.0
+
+
 class ModelConfig(BaseModel):
     forecasts: int = 1
     frequency: str = "auto"
-    autoregression_lags: int = 0
+    autoregression: AutoregressionConfig = AutoregressionConfig()
     yearly_seasonality: np_types.SeasonalityArgument = False
     training: TrainingConfig
 
@@ -73,7 +78,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
 
     m = NeuralProphet(
         n_forecasts=config.forecasts,
-        n_lags=config.autoregression_lags,
+        n_lags=config.autoregression.lags,
         yearly_seasonality=config.yearly_seasonality,
         epochs=3,
     )
@@ -86,7 +91,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
     # Values n_lags+: ds, y, yhat1, yhat2, ar1, ar2, trend, season_weekly, season_daily
 
-    if config.autoregression_lags > 1:
+    if config.autoregression.lags > 0:
         # Values latest: ds, y, origin0
         df_fcst = m.get_latest_forecast(fcst)
         print("df_fcst", df_fcst.columns)
