@@ -86,14 +86,16 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         filtered_columns = [
             c
             for c in df_fcst.columns
-            if not c.startswith("ar") and not c.startswith("yhat")
+            if not c.startswith("ar") and (not c.startswith("yhat") or c == "yhat1")
         ]
+        # TODO: The autoregression df_fcst has currently yhat1 for the historic forecast and yhat2 for the future forecast, while the non-autoregression df_fcst has yhat1 which contains both historic and future forecast.
         print("df_fcst", filtered_columns)
         df_fcst = df_fcst[filtered_columns]
-        df_fcst = df_fcst.rename(columns={"origin-0": "yhat1"})
+        df_fcst = df_fcst.rename(columns={"origin-0": "yhat2"})
     else:
         # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
         df_fcst = fcst
+    # TODO: Sort df_fcst columns by name or something
 
     return {
         "status": "ok",
