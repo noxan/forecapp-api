@@ -2,12 +2,12 @@ import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, np_types, set_log_level
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 set_log_level("WARNING")
 
 
-class DatasetItem(BaseModel):
+class DatasetItem(BaseModel, extra=Extra.allow):
     ds: str | int
     y: str | float | int
 
