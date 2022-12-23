@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from pydantic import Field
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +20,10 @@ set_log_level("WARNING")
 class DatasetItem(BaseModel, extra=Extra.allow):
     ds: str | int
     y: str | float | int
+
+
+class Dataset(BaseModel):
+    __root__: list[DatasetItem] = Field(..., min_items=1)
 
 
 class TrainingConfig(BaseModel):
@@ -51,13 +56,12 @@ def read_root():
 
 
 @app.post("/prediction")
-def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
+def prediction(dataset: Dataset, configuration: ModelConfig):
     config = configuration
     print(config)
 
-    items = [item.dict() for item in dataset]
+    items = [item.dict() for item in dataset.__root__]
     print("dataset", "n=" + str(len(items)))
-    print(items[0])
     df = pd.DataFrame(items)
     df = df.dropna()
     df["ds"] = pd.to_datetime(df["ds"], utc=True).dt.tz_localize(None)
