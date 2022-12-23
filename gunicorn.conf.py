@@ -7,8 +7,12 @@ capture_output = True
 # How verbose the Gunicorn error logs should be
 loglevel = "info"
 
+wsgi_app = "main:app"
+
 # Workers
 workers = 1
 
 graceful_timeout = 180
 timeout = 120
+
+worker_class = "uvicorn.workers.UvicornWorker"

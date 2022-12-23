@@ -1,6 +1,5 @@
-flask-cors==3.0.10
-flask==2.2.2
-gunicorn==20.1.0
+fastapi==0.88.0
+uvicorn[standard]==0.20.0
 neuralprophet==0.5.0
-sentry-sdk[flask]==1.10.1
-python-dotenv==0.21.0
+sentry-sdk[fastapi]==1.10.1
+gunicorn==20.1.0
