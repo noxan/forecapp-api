@@ -82,7 +82,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         n_forecasts=config.forecasts if is_autoregression else 1,
         n_lags=config.autoregression.lags,
         yearly_seasonality=config.yearly_seasonality,
-        epochs=3,
+        epochs=config.training.epochs,
     )
 
     metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
