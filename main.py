@@ -40,4 +40,10 @@ def prediction(dataset: list, configuration: ModelConfig):
         epochs=1,
     )
 
-    return {"status": "ok", "config": config}
+    metrics = m.fit(df, checkpointing=False, progress=None, minimal=True)
+
+    return {
+        "status": "ok",
+        "config": config,
+        "metrics": metrics,
+    }
