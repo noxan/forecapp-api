@@ -20,9 +20,17 @@ class AutoregressionConfig(BaseModel):
     regularization: float = 0.0
 
 
+class SeasonalityConfig(BaseModel):
+    yearly: np_types.SeasonalityArgument = "auto"
+    weekly: np_types.SeasonalityArgument = "auto"
+    daily: np_types.SeasonalityArgument = "auto"
+    mode: np_types.SeasonalityMode = "additive"
+    regularization: float = 0
+
+
 class ModelConfig(BaseModel):
     forecasts: int = 1
     frequency: str = "auto"
     autoregression: AutoregressionConfig = AutoregressionConfig()
-    yearly_seasonality: np_types.SeasonalityArgument = False
+    seasonality: SeasonalityConfig = SeasonalityConfig()
     training: TrainingConfig = TrainingConfig()

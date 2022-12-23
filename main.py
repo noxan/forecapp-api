@@ -55,7 +55,11 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     m = NeuralProphet(
         n_forecasts=config.forecasts if is_autoregression else 1,
         n_lags=config.autoregression.lags,
-        yearly_seasonality=config.yearly_seasonality,
+        yearly_seasonality=config.seasonality.yearly,
+        weekly_seasonality=config.seasonality.weekly,
+        daily_seasonality=config.seasonality.daily,
+        seasonality_mode=config.seasonality.mode,
+        seasonality_reg=config.seasonality.regularization,
         epochs=config.training.epochs,
     )
 
