@@ -15,6 +15,7 @@ class Dataset(BaseModel):
 class TrainingConfig(CamelModel):
     epochs: int | None = None
     learning_rate: float | None = None
+    batch_size: int | None = None
 
 
 class AutoregressionConfig(BaseModel):

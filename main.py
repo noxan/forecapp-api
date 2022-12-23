@@ -64,6 +64,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         # training
         epochs=config.training.epochs,
         learning_rate=config.training.learning_rate,
+        batch_size=config.training.batch_size,
     )
 
     metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
