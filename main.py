@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import sentry_sdk
 from fastapi import FastAPI
@@ -89,6 +90,6 @@ def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
 
     return {
         "status": "ok",
-        "forecast": fcst.to_dict("records"),
-        "metrics": metrics.to_dict(),
+        "forecast": fcst.replace({np.nan: None}).to_dict(),
+        "metrics": metrics.replace({np.nan: None}).to_dict(),
     }
