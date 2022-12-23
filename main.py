@@ -1,3 +1,4 @@
+import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -27,6 +28,8 @@ def read_root():
 def prediction(dataset: list, config: ModelConfig):
     print(dataset)
     print(config)
+
+    df = pd.DataFrame(dataset)
 
     m = NeuralProphet(
         n_forecasts=config.forecasts,
