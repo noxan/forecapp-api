@@ -38,7 +38,7 @@ def read_root():
 @app.post("/prediction")
 def prediction(dataset: Dataset, configuration: ModelConfig):
     config = configuration
-    print(config)
+    print("config", config)
 
     items = [item.dict() for item in dataset.__root__]
     print("dataset", "n=" + str(len(items)))
@@ -55,11 +55,13 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     m = NeuralProphet(
         n_forecasts=config.forecasts if is_autoregression else 1,
         n_lags=config.autoregression.lags,
+        # seasonality
         yearly_seasonality=config.seasonality.yearly,
         weekly_seasonality=config.seasonality.weekly,
         daily_seasonality=config.seasonality.daily,
         seasonality_mode=config.seasonality.mode,
         seasonality_reg=config.seasonality.regularization,
+        # training
         epochs=config.training.epochs,
         learning_rate=config.training.learning_rate,
     )
