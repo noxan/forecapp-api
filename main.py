@@ -64,7 +64,8 @@ def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
         epochs=1,
     )
 
-    metrics = m.fit(df, checkpointing=False, progress=None) or pd.DataFrame()
+    metrics = m.fit(df, checkpointing=False, progress=None)
+    metrics = metrics if metrics is not None else pd.DataFrame()
 
     fcst = m.predict(df)
 
