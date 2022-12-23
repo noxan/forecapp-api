@@ -46,8 +46,14 @@ def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
     config = configuration
     print(config)
 
-    df = pd.DataFrame([item.dict() for item in dataset])
-    print("dataset", "n=" + str(len(dataset)))
+    items = [item.dict() for item in dataset]
+    print("dataset", "n=" + str(len(items)))
+    print(items[0])
+    df = pd.DataFrame(items)
+    df = df.dropna()
+    df["ds"] = pd.to_datetime(df["ds"], utc=True).dt.tz_localize(None)
+    df["y"] = pd.to_numeric(df["y"])
+
     print(df.head())
     print(df.dtypes)
 
