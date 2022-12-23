@@ -101,7 +101,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     if is_autoregression:
         # Values n_lags+: ds, y, yhat1, yhat2, ..., ar1, ar2, ..., trend, season_weekly, season_daily
         # Values latest: ds, y, origin0
-        df_fcst = m.get_latest_forecast(fcst, include_history_data=True)
+        fcst_latest = m.get_latest_forecast(fcst, include_history_data=True)
+        df_fcst = pd.concat([fcst, fcst_latest], axis=1)
         print("df_fcst", df_fcst.columns)
     else:
         # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
