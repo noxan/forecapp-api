@@ -40,10 +40,10 @@ def prediction(dataset: list, configuration: ModelConfig):
         epochs=1,
     )
 
-    metrics = m.fit(df, checkpointing=False, progress=None, minimal=True)
+    metrics = m.fit(df, checkpointing=False, progress=None)
 
     return {
         "status": "ok",
         "config": config,
-        "metrics": metrics,
+        "metrics": metrics.to_dict(),
     }
