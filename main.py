@@ -82,6 +82,15 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         fcst_latest = m.get_latest_forecast(fcst, include_history_data=True)
         df_fcst = pd.concat([fcst, fcst_latest], axis=1)
         print("df_fcst", df_fcst.columns)
+        # Remove autoregression columns from response
+        filtered_columns = [
+            c
+            for c in df_fcst.columns
+            if not c.startswith("ar") and not c.startswith("yhat")
+        ]
+        print("df_fcst", filtered_columns)
+        df_fcst = df_fcst[filtered_columns]
+        df_fcst = df_fcst.rename(columns={"origin-0": "yhat1"})
     else:
         # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
         df_fcst = fcst
