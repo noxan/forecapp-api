@@ -66,8 +66,13 @@ def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
 
     metrics = m.fit(df, checkpointing=False, progress=None) or pd.DataFrame()
 
+    fcst = m.predict(df)
+
+    df_fcst = m.get_latest_forecast(fcst)
+
     return {
         "status": "ok",
         "config": config,
+        "forecast": df_fcst.to_dict(),
         "metrics": metrics.to_dict(),
     }
