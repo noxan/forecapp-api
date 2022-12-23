@@ -67,7 +67,13 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         batch_size=config.training.batch_size,
     )
 
-    metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
+    metrics = m.fit(
+        df,
+        checkpointing=False,
+        progress=None,
+        freq=config.frequency,
+        early_stopping=config.training.early_stopping,
+    )
     metrics = metrics if metrics is not None else pd.DataFrame()
 
     df_future = m.make_future_dataframe(
