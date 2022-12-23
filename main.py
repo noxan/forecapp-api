@@ -4,11 +4,15 @@ from pydantic import BaseModel
 from neuralprophet import NeuralProphet, np_types
 
 
+class TrainingConfig(BaseModel):
+    epochs: int | None = None
+
+
 class ModelConfiguration(BaseModel):
     forecasts: int = 1
     autoregression_lags: int = 0
     yearly_seasonality: np_types.SeasonalityArgument = False
-    training: bool = False
+    training: TrainingConfig
 
 
 app = FastAPI()
