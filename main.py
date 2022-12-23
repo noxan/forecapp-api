@@ -37,6 +37,7 @@ def prediction(dataset: list, configuration: ModelConfig):
         n_forecasts=config.forecasts,
         n_lags=config.autoregression_lags,
         yearly_seasonality=config.yearly_seasonality,
+        epochs=1,
     )
 
     return {"status": "ok", "config": config}
