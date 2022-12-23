@@ -44,10 +44,12 @@ def read_root():
 @app.post("/prediction")
 def prediction(dataset: list[DatasetItem], configuration: ModelConfig):
     config = configuration
-    print("dataset", len(dataset))
     print(config)
 
-    df = pd.DataFrame(dataset)
+    df = pd.DataFrame([item.dict() for item in dataset])
+    print("dataset", "n=" + str(len(dataset)))
+    print(df.head())
+    print(df.dtypes)
 
     m = NeuralProphet(
         n_forecasts=config.forecasts,
