@@ -88,7 +88,13 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
     metrics = metrics if metrics is not None else pd.DataFrame()
 
-    fcst = m.predict(df)
+    df_future = m.make_future_dataframe(
+        df,
+        n_historic_predictions=True,
+        periods=config.forecasts,
+    )
+
+    fcst = m.predict(df_future)
     print("fcst", fcst.columns)
 
     # TODO: Map all dataframes to the same format (best with proper names already)
