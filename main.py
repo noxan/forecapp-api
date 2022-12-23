@@ -20,7 +20,8 @@ def read_root():
 
 
 @app.post("/prediction")
-def prediction(configuration: ModelConfiguration):
+def prediction(dataset: list, configuration: ModelConfiguration):
+    print(dataset)
     print(configuration)
 
     m = NeuralProphet(
