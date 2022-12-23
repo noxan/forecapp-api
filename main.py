@@ -32,6 +32,7 @@ class TrainingConfig(BaseModel):
 
 class ModelConfig(BaseModel):
     forecasts: int = 1
+    frequency: str = "auto"
     autoregression_lags: int = 0
     yearly_seasonality: np_types.SeasonalityArgument = False
     training: TrainingConfig
@@ -77,7 +78,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         epochs=1,
     )
 
-    metrics = m.fit(df, checkpointing=False, progress=None)
+    metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
     metrics = metrics if metrics is not None else pd.DataFrame()
 
     fcst = m.predict(df)
