@@ -61,6 +61,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         seasonality_mode=config.seasonality.mode,
         seasonality_reg=config.seasonality.regularization,
         epochs=config.training.epochs,
+        learning_rate=config.training.learning_rate,
     )
 
     metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)

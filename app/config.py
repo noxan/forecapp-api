@@ -1,5 +1,6 @@
 from neuralprophet import np_types
 from pydantic import BaseModel, Extra, Field
+from fastapi_camelcase import CamelModel
 
 
 class DatasetItem(BaseModel, extra=Extra.allow):
@@ -11,8 +12,9 @@ class Dataset(BaseModel):
     __root__: list[DatasetItem] = Field(..., min_items=1)
 
 
-class TrainingConfig(BaseModel):
+class TrainingConfig(CamelModel):
     epochs: int | None = None
+    learning_rate: float | None = None
 
 
 class AutoregressionConfig(BaseModel):
