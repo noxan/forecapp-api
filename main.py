@@ -1,6 +1,10 @@
-from typing import Union
-
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+
+class ModelConfiguration(BaseModel):
+    training: bool = False
+
 
 app = FastAPI()
 
@@ -10,6 +14,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/prediction")
+def prediction(configuration: ModelConfiguration):
+    print(configuration)
+    return {"status": "ok", "configuration": configuration}
