@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
-from pydantic import Field
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from neuralprophet import NeuralProphet, np_types, set_log_level
-from pydantic import BaseModel, Extra
+from neuralprophet import NeuralProphet, set_log_level
+
+from app.config import Dataset, ModelConfig
 
 sentry_sdk.init(
     dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
@@ -15,32 +15,6 @@ sentry_sdk.init(
 )
 
 set_log_level("WARNING")
-
-
-class DatasetItem(BaseModel, extra=Extra.allow):
-    ds: str | int
-    y: str | float | int
-
-
-class Dataset(BaseModel):
-    __root__: list[DatasetItem] = Field(..., min_items=1)
-
-
-class TrainingConfig(BaseModel):
-    epochs: int | None = None
-
-
-class AutoregressionConfig(BaseModel):
-    lags: int = 0
-    regularization: float = 0.0
-
-
-class ModelConfig(BaseModel):
-    forecasts: int = 1
-    frequency: str = "auto"
-    autoregression: AutoregressionConfig = AutoregressionConfig()
-    yearly_seasonality: np_types.SeasonalityArgument = False
-    training: TrainingConfig = TrainingConfig()
 
 
 app = FastAPI()
