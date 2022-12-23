@@ -75,7 +75,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         n_forecasts=config.forecasts,
         n_lags=config.autoregression_lags,
         yearly_seasonality=config.yearly_seasonality,
-        epochs=1,
+        epochs=3,
     )
 
     metrics = m.fit(df, checkpointing=False, progress=None, freq=config.frequency)
