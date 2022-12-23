@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ssh -i "aws-forecapp.pem" ubuntu@ec2-54-219-210-155.us-west-1.compute.amazonaws.com << EOF
+ssh -i "aws-forecapp.pem" ubuntu@ec2-54-67-50-78.us-west-1.compute.amazonaws.com << EOF
 
 cd forecapp-api/
 
