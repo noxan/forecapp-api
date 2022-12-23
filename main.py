@@ -76,8 +76,10 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     print(df.head())
     print(df.dtypes)
 
+    is_autoregression = config.autoregression.lags > 0
+
     m = NeuralProphet(
-        n_forecasts=config.forecasts if config.autoregression.lags > 0 else 1,
+        n_forecasts=config.forecasts if is_autoregression else 1,
         n_lags=config.autoregression.lags,
         yearly_seasonality=config.yearly_seasonality,
         epochs=3,
@@ -91,7 +93,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
     # Values n_lags+: ds, y, yhat1, yhat2, ar1, ar2, trend, season_weekly, season_daily
 
-    if config.autoregression.lags > 0:
+    if is_autoregression:
         # Values latest: ds, y, origin0
         df_fcst = m.get_latest_forecast(fcst)
         print("df_fcst", df_fcst.columns)
