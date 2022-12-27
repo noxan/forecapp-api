@@ -19,3 +19,6 @@ tsconfig.tsbuildinfo
 # lightning
 lightning_logs/
 *.ckpt
+
+# server
+/logs/
