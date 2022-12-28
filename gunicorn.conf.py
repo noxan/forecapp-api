@@ -12,7 +12,7 @@ wsgi_app = "main:app"
 # Workers
 workers = 1
 
-graceful_timeout = 180
-timeout = 120
+graceful_timeout = 360
+timeout = 360
 
 worker_class = "uvicorn.workers.UvicornWorker"
