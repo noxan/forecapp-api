@@ -57,6 +57,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         n_lags=config.autoregression.lags,
         # trend
         growth=config.trend.growth,
+        n_changepoints=config.trend.number_of_changepoints,
         # seasonality
         yearly_seasonality=config.seasonality.yearly,
         weekly_seasonality=config.seasonality.weekly,

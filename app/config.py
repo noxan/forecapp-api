@@ -12,8 +12,9 @@ class Dataset(BaseModel):
     __root__: list[DatasetItem] = Field(..., min_items=1)
 
 
-class TrendConfig(BaseModel):
+class TrendConfig(CamelModel):
     growth: np_types.GrowthMode = "linear"
+    number_of_changepoints: int = 10
 
 
 class TrainingConfig(CamelModel):
