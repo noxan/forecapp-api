@@ -69,6 +69,11 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         batch_size=config.training.batch_size,
     )
 
+    for lagged_regressor in config.lagged_regressors:
+        m.add_lagged_regressor(
+            lagged_regressor.name, n_lags=3, regularization=0.1, normalize="auto"
+        )
+
     metrics = m.fit(
         df,
         checkpointing=False,

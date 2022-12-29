@@ -36,10 +36,15 @@ class SeasonalityConfig(BaseModel):
     regularization: float = 0
 
 
-class ModelConfig(BaseModel):
+class LaggedRegressorConfig(BaseModel):
+    name: str
+
+
+class ModelConfig(CamelModel):
     forecasts: int = 1
     frequency: str = "auto"
     trend: TrendConfig = TrendConfig()
     autoregression: AutoregressionConfig = AutoregressionConfig()
     seasonality: SeasonalityConfig = SeasonalityConfig()
     training: TrainingConfig = TrainingConfig()
+    lagged_regressors: list[LaggedRegressorConfig] = []
