@@ -42,7 +42,7 @@ class LaggedRegressorConfig(BaseModel):
 
 
 class ModelConfig(CamelModel):
-    forecasts: int = 1
+    forecasts: int = Field(default=1, ge=1)
     frequency: str = "auto"
     trend: TrendConfig = TrendConfig()
     autoregression: AutoregressionConfig = AutoregressionConfig()
