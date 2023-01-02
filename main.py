@@ -104,7 +104,9 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         filtered_columns = [
             c
             for c in df_fcst.columns
-            if not c.startswith("ar") and (not c.startswith("yhat") or c == "yhat1")
+            if not c.startswith("ar")
+            and not (c.startswith("lagged_regressor") and not c.endswith("1"))
+            and (not c.startswith("yhat") or c == "yhat1")
         ]
         # TODO: The autoregression df_fcst has currently yhat1 for the historic forecast and yhat2 for the future forecast, while the non-autoregression df_fcst has yhat1 which contains both historic and future forecast.
         print("df_fcst", filtered_columns)
