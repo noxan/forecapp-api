@@ -111,7 +111,11 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         # TODO: The autoregression df_fcst has currently yhat1 for the historic forecast and yhat2 for the future forecast, while the non-autoregression df_fcst has yhat1 which contains both historic and future forecast.
         print("df_fcst", filtered_columns)
         df_fcst = df_fcst[filtered_columns]
-        df_fcst = df_fcst.rename(columns={"origin-0": "yhat2"})
+        # Merge origin-0 (the future prediction) into yhat1 (the historic prediction)
+        # df_fcst = df_fcst.rename(columns={"origin-0": "yhat2"})
+        df_fcst["yhat1"] = df_fcst["yhat1"].fillna(df_fcst["origin-0"])
+        filtered_columns.remove("origin-0")
+        df_fcst = df_fcst[filtered_columns]
     else:
         # Values default: ds, y, yhat1, trend, season_yearly, season_weekly, season_daily
         df_fcst = fcst
