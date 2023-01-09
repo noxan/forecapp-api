@@ -1,8 +1,9 @@
+import json
+
 import numpy as np
 import pandas as pd
-import sentry_sdk
-import json
 import plotly
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level

@@ -1,6 +1,6 @@
+from fastapi_camelcase import CamelModel
 from neuralprophet import np_types
 from pydantic import BaseModel, Extra, Field
-from fastapi_camelcase import CamelModel
 
 
 class DatasetItem(BaseModel, extra=Extra.allow):
