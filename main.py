@@ -125,11 +125,15 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     # TODO: Sort df_fcst columns by name or something
 
     fig = m.plot_parameters(plotting_backend="plotly")
+    # fig2 = m.plot_components(fcst, plotting_backend="plotly")
 
     return {
         "status": "ok",
         "configuration": configuration,
         "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
-        "explainable": {"parameters": json.loads(plotly.io.to_json(fig))},
+        "explainable": {
+            "parameters": json.loads(plotly.io.to_json(fig)),
+            # "components": json.loads(plotly.io.to_json(fig2)),
+        },
     }
