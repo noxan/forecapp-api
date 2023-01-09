@@ -123,6 +123,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
 
     return {
         "status": "ok",
+        "configuration": configuration,
         "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
     }
