@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import sentry_sdk
+import json
+import plotly
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
@@ -121,9 +123,12 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         df_fcst = fcst
     # TODO: Sort df_fcst columns by name or something
 
+    fig = m.plot_parameters(plotting_backend="plotly")
+
     return {
         "status": "ok",
         "configuration": configuration,
         "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
+        "explainable": {"parameters": json.loads(plotly.io.to_json(fig))},
     }
