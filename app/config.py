@@ -1,11 +1,13 @@
+from typing import Union
+
 from fastapi_camelcase import CamelModel
 from neuralprophet import np_types
 from pydantic import BaseModel, Extra, Field
 
 
 class DatasetItem(BaseModel, extra=Extra.allow):
-    ds: str | int
-    y: str | float | int
+    ds: Union[str, int]
+    y: Union[str, float, int]
 
 
 class Dataset(BaseModel):
@@ -18,9 +20,9 @@ class TrendConfig(CamelModel):
 
 
 class TrainingConfig(CamelModel):
-    epochs: int | None = None
-    learning_rate: float | None = None
-    batch_size: int | None = None
+    epochs: Union[int, None] = None
+    learning_rate: Union[float, None] = None
+    batch_size: Union[int, None] = None
     early_stopping: bool = True
 
 
