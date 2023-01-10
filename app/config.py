@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 from fastapi_camelcase import CamelModel
 from neuralprophet import np_types
@@ -11,7 +11,7 @@ class DatasetItem(BaseModel, extra=Extra.allow):
 
 
 class Dataset(BaseModel):
-    __root__: list[DatasetItem] = Field(..., min_items=1)
+    __root__: List[DatasetItem] = Field(..., min_items=1)
 
 
 class TrendConfig(CamelModel):
@@ -50,4 +50,4 @@ class ModelConfig(CamelModel):
     autoregression: AutoregressionConfig = AutoregressionConfig()
     seasonality: SeasonalityConfig = SeasonalityConfig()
     training: TrainingConfig = TrainingConfig()
-    lagged_regressors: list[LaggedRegressorConfig] = []
+    lagged_regressors: List[LaggedRegressorConfig] = []
