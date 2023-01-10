@@ -1,5 +1,11 @@
 # forecapp-api
 
+## Minimum requirements
+
+- 1 vCPU
+- 2 GB RAM
+- 15 GB Disk
+
 ## Setup instructions
 
     eb init
