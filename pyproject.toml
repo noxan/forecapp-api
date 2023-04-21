@@ -7,7 +7,8 @@ readme = "README.md"
 packages = [{include = "forecapp_api"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "~3.10"
+neuralprophet = "0.6.0.rc1"
 
 
 [build-system]
