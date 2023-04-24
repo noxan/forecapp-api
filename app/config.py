@@ -41,6 +41,10 @@ class SeasonalityConfig(BaseModel):
 
 class LaggedRegressorConfig(BaseModel):
     name: str
+    lags: int
+    regularization: float
+    normalize: bool | str
+
 
 
 class ModelConfig(CamelModel):
