@@ -75,7 +75,10 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
 
     for lagged_regressor in config.lagged_regressors:
         m.add_lagged_regressor(
-            lagged_regressor.name, n_lags=lagged_regressor.lags, regularization=lagged_regressor.regularization, normalize=lagged_regressor.normalize
+            lagged_regressor.name,
+            n_lags=lagged_regressor.lags,
+            regularization=lagged_regressor.regularization,
+            normalize=lagged_regressor.normalize,
         )
 
     metrics = m.fit(
