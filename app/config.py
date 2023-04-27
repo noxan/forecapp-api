@@ -16,7 +16,7 @@ class Dataset(BaseModel):
 
 class TrendConfig(CamelModel):
     growth: np_types.GrowthMode = "linear"
-    number_of_changepoints: int = 10
+    number_of_changepoints: int = Field(default=10, ge=0)
 
 
 class TrainingConfig(CamelModel):
@@ -27,8 +27,8 @@ class TrainingConfig(CamelModel):
 
 
 class AutoregressionConfig(BaseModel):
-    lags: int = 0
-    regularization: float = 0.0
+    lags: int = Field(default=0, ge=0)
+    regularization: float = Field(default=0.0, ge=0.0, le=1.0)
 
 
 class SeasonalityConfig(BaseModel):
@@ -41,15 +41,14 @@ class SeasonalityConfig(BaseModel):
 
 class LaggedRegressorConfig(BaseModel):
     name: str
-    lags: int
-    regularization: float
-    normalize: bool | str
-
+    lags: int = Field(default=0, ge=0)
+    regularization: float = Field(default=0.0, ge=0.0, le=1.0)
+    normalize: Union[bool, str]
 
 
 class ModelConfig(CamelModel):
-    forecasts: int = Field(default=1, ge=1)
-    frequency: str = "auto"
+    forecasts: int = Field(default=1, ge=0)
+    frequency: str = Field(default="auto")
     trend: TrendConfig = TrendConfig()
     autoregression: AutoregressionConfig = AutoregressionConfig()
     seasonality: SeasonalityConfig = SeasonalityConfig()
