@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly
 import sentry_sdk
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
 
@@ -38,7 +38,8 @@ def read_root():
     return {"Hello": "World"}
 
 
-def run_prediction(dataset: Dataset, configuration: ModelConfig):
+@app.post("/prediction")
+def prediction(dataset: Dataset, configuration: ModelConfig):
     config = configuration
     print("config", config)
 
@@ -139,14 +140,6 @@ def run_prediction(dataset: Dataset, configuration: ModelConfig):
             # "components": json.loads(plotly.io.to_json(fig2)),
         },
     }
-
-
-@app.post("/prediction")
-def prediction(dataset: Dataset, configuration: ModelConfig):
-    try:
-        return run_prediction(dataset, configuration)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
