@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
 
 from app.config import Dataset, ModelConfig
+from app.events import create_event_dataframe
 
 sentry_sdk.init(
     dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
@@ -72,6 +73,19 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
     )
+
+    first = True
+    # add events
+    if config.events:
+        for event_name, event in config.events.items():
+            event_df = create_event_dataframe(event_name, event)
+            if first:
+                events_df = event_df
+                first = False
+            else:
+                events_df = pd.concat([events_df, event_df], axis=1)
+        m.add_events(list(config.events.keys()))
+        df = m.create_df_with_events(df, events_df)
 
     for lagged_regressor in config.lagged_regressors:
         m.add_lagged_regressor(
