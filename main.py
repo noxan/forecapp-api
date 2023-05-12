@@ -7,6 +7,7 @@ import sentry_sdk
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
+import sys
 
 from app.config import Dataset, ModelConfig, ValidationConfig
 from app.events import create_event_dataframe
@@ -174,7 +175,6 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     metrics = m.fit(
         df,
         checkpointing=False,
-        progress=None,
         freq=config.frequency,
         early_stopping=config.training.early_stopping,
     )
@@ -237,7 +237,7 @@ async def prediction_endpoint(websocket: WebSocket):
     await websocket.accept()
     msg = await websocket.receive_json()
     assert msg["type"] == "Dataset"
-    dataset = msg["data"]
+    dataset = msg["data"][:-1]
 
     while True:
         msg = await websocket.receive_json()
