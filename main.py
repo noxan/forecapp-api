@@ -71,6 +71,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         epochs=config.training.epochs,
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
+        # quantiles
+        quantiles=[0.025, 0.975],
     )
 
     for lagged_regressor in config.lagged_regressors:
