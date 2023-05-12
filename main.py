@@ -84,7 +84,13 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
                 first = False
             else:
                 events_df = pd.concat([events_df, event_df], axis=1)
-        m.add_events(list(config.events.keys()))
+            m.add_events(
+                list(event_name),
+                lower_window=event.lowerWindow,
+                upper_window=event.upperWindow,
+                regularization=event.regularization,
+                mode=event.mode,
+            )
         df = m.create_df_with_events(df, events_df)
 
     for lagged_regressor in config.lagged_regressors:
