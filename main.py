@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly
 import sentry_sdk
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
 
@@ -230,6 +230,21 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
             "components": json.loads(plotly.io.to_json(comp_fig)),
         },
     }
+
+
+@app.websocket("/prediction")
+async def prediction_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    msg = await websocket.receive_json()
+    assert msg["type"] == "Dataset"
+    dataset = msg["data"]
+
+    while True:
+        msg = await websocket.receive_json()
+        assert msg["type"] == "Configuration"
+        config = msg["data"]
+        ret = prediction(dataset, config)
+        await websocket.send_json(ret)
 
 
 if __name__ == "__main__":
