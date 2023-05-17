@@ -85,7 +85,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
             else:
                 events_df = pd.concat([events_df, event_df], axis=1)
             m.add_events(
-                list(event_name),
+                [event_name],
                 lower_window=event.lowerWindow,
                 upper_window=event.upperWindow,
                 regularization=event.regularization,
