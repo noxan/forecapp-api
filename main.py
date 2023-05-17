@@ -83,7 +83,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
                 events_df = event_df
                 first = False
             else:
-                events_df = pd.concat([events_df, event_df], axis=1)
+                events_df = pd.concat([events_df, event_df], axis=0)
             m.add_events(
                 [event_name],
                 lower_window=event.lowerWindow,
