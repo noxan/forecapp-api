@@ -1,13 +1,14 @@
 import json
-
 import numpy as np
 import pandas as pd
 import plotly
 import sentry_sdk
-from fastapi import FastAPI, WebSocket
+import threading
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from neuralprophet import NeuralProphet, set_log_level
-import sys
+from neuralprophet import set_log_level, NeuralProphet
+
+from np_helpers import NPProgressCallback, run_prediction, NPThread
 
 from app.config import Dataset, ModelConfig, ValidationConfig
 from app.events import create_event_dataframe
@@ -235,16 +236,34 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
 @app.websocket("/prediction")
 async def prediction_endpoint(websocket: WebSocket):
     await websocket.accept()
-    msg = await websocket.receive_json()
-    assert msg["type"] == "Dataset"
-    dataset = msg["data"][:-1]
-
-    while True:
+    try:
         msg = await websocket.receive_json()
-        assert msg["type"] == "Configuration"
-        config = msg["data"]
-        ret = prediction(dataset, config)
-        await websocket.send_json(ret)
+        assert msg["type"] == "Dataset"
+        dataset = Dataset.parse_obj(msg["data"][:-1])
+
+        while True:
+            msg = await websocket.receive_json()
+            assert msg["type"] == "Configuration"
+            config = ModelConfig.parse_obj(msg["data"])
+
+            np_thread = NPThread(dataset, config)
+
+            np_thread.start()
+
+            delay_event = threading.Event()
+            while not np_thread.is_done() and not delay_event.wait(timeout=0.500):
+                print()
+                print(np_thread.get_progress())
+                msg = {"type": "Progress", "data": np_thread.get_progress()}
+                await websocket.send_json(msg)
+
+            np_thread.join()
+
+            results = {"type": "ForecastResult", "data": np_thread.results}
+
+            await websocket.send_json(results)
+    except WebSocketDisconnect:
+        pass
 
 
 if __name__ == "__main__":
