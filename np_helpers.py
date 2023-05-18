@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import plotly
 from app.config import Dataset, ModelConfig
-import threading
+import multiprocessing as mp
 
 
 def run_prediction(
@@ -121,40 +121,40 @@ def run_prediction(
 
 
 class NPProgressCallback(Callback):
-    def __init__(self, train_started: threading.Event):
-        self.progress = 0
-        self.is_done = False
-        self.is_started = train_started
+    def __init__(self, training_started: mp.Event, progress, is_done):
+        self.progress = progress
+        self.is_done = is_done
+        self.is_started = training_started
 
     def on_train_epoch_start(
         self, trainer: "pl.Trainer", pl_module: "pl.LightningModule"
     ):
-        self.progress = (trainer.current_epoch * 100) // trainer.max_epochs
+        self.progress.value = (trainer.current_epoch * 100) // trainer.max_epochs
 
     def on_train_end(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule"):
-        self.is_done = True
+        self.is_done.value = True
 
     def on_train_start(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule"):
         self.is_started.set()
 
-    def get_progress(self):
-        return self.progress
 
-
-class NPThread(threading.Thread):
-    def __init__(self, dataset: Dataset, config: ModelConfig):
+class NPProcess(mp.Process):
+    def __init__(
+        self,
+        dataset: Dataset,
+        config: ModelConfig,
+        training_started: mp.Event,
+        progress,
+        is_done,
+        pipe,
+    ):
         self.dataset = dataset
         self.config = config
-        self.train_started = threading.Event()
-        self.callback = NPProgressCallback(self.train_started)
-        self.results = {}
-        threading.Thread.__init__(self)
+        self.callback = NPProgressCallback(training_started, progress, is_done)
+        self.pipe = pipe
+        self.training_started = training_started
+        mp.Process.__init__(self)
 
     def run(self):
-        self.results = run_prediction(self.dataset, self.config, self.callback)
-
-    def get_progress(self):
-        return self.callback.get_progress()
-
-    def is_done(self):
-        return self.callback.is_done
+        result = run_prediction(self.dataset, self.config, self.callback)
+        self.pipe.send(result)

@@ -2,13 +2,19 @@ import json
 import numpy as np
 import pandas as pd
 import plotly
+import asyncio
 import sentry_sdk
 import threading
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import set_log_level, NeuralProphet
+import websockets
+from neuralprophet import set_log_level
+from neuralprophet.df_utils import infer_frequency
+import multiprocessing as mp
+import pandas as pd
 
-from np_helpers import NPProgressCallback, run_prediction, NPThread
+from np_helpers import run_prediction, NPProcess
 
 from app.config import Dataset, ModelConfig, ValidationConfig
 from app.events import create_event_dataframe
@@ -246,23 +252,36 @@ async def prediction_endpoint(websocket: WebSocket):
             assert msg["type"] == "Configuration"
             config = ModelConfig.parse_obj(msg["data"])
 
-            np_thread = NPThread(dataset, config)
+            progress = mp.Value("i", 0)
+            is_done = mp.Value("b", False)
+            training_started = mp.Event()
 
-            np_thread.start()
+            (pipe1, pipe2) = mp.Pipe()
 
-            delay_event = threading.Event()
-            while not np_thread.is_done() and not delay_event.wait(timeout=0.500):
-                print()
-                print(np_thread.get_progress())
-                msg = {"type": "Progress", "data": np_thread.get_progress()}
-                await websocket.send_json(msg)
+            np_proc = NPProcess(
+                dataset, config, training_started, progress, is_done, pipe2
+            )
 
-            np_thread.join()
+            np_proc.start()
 
-            results = {"type": "ForecastResult", "data": np_thread.results}
+            prev_progress = 0
+            while not is_done.value:
+                curr_progress = progress.value
+                if curr_progress != prev_progress:
+                    prev_progress = curr_progress
+                    msg = {"type": "Progress", "data": curr_progress}
+                    await websocket.send_json(msg)
+                    await asyncio.sleep(0.1)
 
+            np_proc.join()
+            print("Joined")
+
+            res = pipe1.recv()
+            results = {"type": "ForecastResult", "data": res}
             await websocket.send_json(results)
     except WebSocketDisconnect:
+        pass
+    except websockets.exceptions.ConnectionClosed:
         pass
 
 
