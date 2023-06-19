@@ -63,3 +63,8 @@ class ModelConfig(CamelModel):
     events: Dict[str, EventItem] = {}
     training: TrainingConfig = TrainingConfig()
     lagged_regressors: List[LaggedRegressorConfig] = []
+
+
+class ValidationConfig(CamelModel):
+    split: float = Field(ge=0.0, le=1.0, default=0.2)
+    modelConfig: ModelConfig

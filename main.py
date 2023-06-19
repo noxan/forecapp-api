@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
 
-from app.config import Dataset, ModelConfig
+from app.config import Dataset, ModelConfig, ValidationConfig
 from app.events import create_event_dataframe
 
 sentry_sdk.init(
@@ -39,20 +39,80 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/prediction")
-def prediction(dataset: Dataset, configuration: ModelConfig):
-    config = configuration
-    print("config", config)
-
+def prep_data(dataset: Dataset):
     items = [item.dict() for item in dataset.__root__]
-    print("dataset", "n=" + str(len(items)))
     df = pd.DataFrame(items)
     df = df.dropna()
     df["ds"] = pd.to_datetime(df["ds"], utc=True).dt.tz_localize(None)
     df["y"] = pd.to_numeric(df["y"])
+    return df
 
-    print(df.head())
-    print(df.dtypes)
+
+@app.post("/validate")
+def validate(dataset: Dataset, validationConfig: ValidationConfig):
+    df = prep_data(dataset)
+    config = validationConfig.modelConfig
+
+    is_autoregression = config.autoregression.lags > 0
+
+    m = NeuralProphet(
+        n_forecasts=1,
+        n_lags=config.autoregression.lags,
+        # trend
+        growth=config.trend.growth,
+        n_changepoints=config.trend.number_of_changepoints,
+        # seasonality
+        yearly_seasonality=config.seasonality.yearly,
+        weekly_seasonality=config.seasonality.weekly,
+        daily_seasonality=config.seasonality.daily,
+        seasonality_mode=config.seasonality.mode,
+        seasonality_reg=config.seasonality.regularization,
+        # training
+        epochs=config.training.epochs,
+        learning_rate=config.training.learning_rate,
+        batch_size=config.training.batch_size,
+        # quantiles
+        quantiles=[0.025, 0.975],
+    )
+
+    train_df, test_df = m.split_df(df=df, valid_p=validationConfig.split)
+    train_metrics = m.fit(
+        df=train_df,
+        checkpointing=False,
+        progress=False,
+        freq=config.frequency,
+        early_stopping=config.training.early_stopping,
+    )
+    test_metrics = m.test(df=test_df)
+
+    # If not doing autoregression then this has columns ds, y, yhat1, yhat1 2.5%, yhat 97.5% and then columns for each component
+    # If doing autoregression with n_lags = i then ds, y, yhat1, ..., yhati, yhat1 2.5%, ..., yhati 2.5%, yhat1 97.5%, ..., yhati 97.5%, components
+    predictions = m.predict(df)
+
+    if is_autoregression:
+        latest_preds = m.get_latest_forecast(prediction, include_history_data=True)
+        prediction_df = pd.concat([predictions, latest_preds], axis=1)
+    else:
+        prediction_df = predictions
+
+    fig = m.plot_parameters(plotting_backend="plotly")
+
+    return {
+        "status": "ok",
+        "validationConfiguration": validationConfig,
+        "prediction": prediction_df.replace({np.nan: None}).to_dict(),
+        "trainMetrics": train_metrics.replace({np.nan: None}).to_dict(),
+        "testMetrics": test_metrics.replace({np.nan: None}).to_dict(),
+        "explainable": {
+            "parameters": json.loads(plotly.io.to_json(fig)),
+        },
+    }
+
+
+@app.post("/prediction")
+def prediction(dataset: Dataset, configuration: ModelConfig):
+    config = configuration
+    df = prep_data(dataset)
 
     is_autoregression = config.autoregression.lags > 0
 
@@ -102,7 +162,6 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
             regularization=lagged_regressor.regularization,
             normalize=lagged_regressor.normalize,
         )
-
     metrics = m.fit(
         df,
         checkpointing=False,
