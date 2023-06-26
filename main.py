@@ -49,9 +49,10 @@ def prep_data(dataset: Dataset):
 
 
 @app.post("/validate")
-def validate(dataset: Dataset, validationConfig: ValidationConfig):
+def validate(dataset: Dataset, configuration: ModelConfig):
     df = prep_data(dataset)
-    config = validationConfig.modelConfig
+
+    config = configuration
 
     is_autoregression = config.autoregression.lags > 0
 
@@ -72,10 +73,13 @@ def validate(dataset: Dataset, validationConfig: ValidationConfig):
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
         # quantiles
-        quantiles=[0.025, 0.975],
+        quantiles=[
+            (100 - config.validation.confidenceLevel) / 100,
+            config.validation.confidenceLevel / 100,
+        ],
     )
 
-    train_df, test_df = m.split_df(df=df, valid_p=validationConfig.split)
+    train_df, test_df = m.split_df(df=df, valid_p=config.validation.testSplit)
     train_metrics = m.fit(
         df=train_df,
         checkpointing=False,
@@ -99,7 +103,7 @@ def validate(dataset: Dataset, validationConfig: ValidationConfig):
 
     return {
         "status": "ok",
-        "validationConfiguration": validationConfig,
+        "configuration": config,
         "prediction": prediction_df.replace({np.nan: None}).to_dict(),
         "trainMetrics": train_metrics.replace({np.nan: None}).to_dict(),
         "testMetrics": test_metrics.replace({np.nan: None}).to_dict(),
@@ -133,7 +137,10 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
         # quantiles
-        quantiles=[0.025, 0.975],
+        quantiles=[
+            (100 - config.validation.confidenceLevel) / 100,
+            config.validation.confidenceLevel / 100,
+        ],
     )
 
     first = True

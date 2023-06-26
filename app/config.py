@@ -54,6 +54,11 @@ class LaggedRegressorConfig(BaseModel):
     normalize: bool | str
 
 
+class ValidationConfig(CamelModel):
+    testSplit: int = Field(ge=0, le=100, default=20)
+    confidenceLevel: int = Field(ge=0, le=100, default=95)
+
+
 class ModelConfig(CamelModel):
     forecasts: int = Field(default=1, ge=1)
     frequency: str = "auto"
@@ -62,9 +67,5 @@ class ModelConfig(CamelModel):
     seasonality: SeasonalityConfig = SeasonalityConfig()
     events: Dict[str, EventItem] = {}
     training: TrainingConfig = TrainingConfig()
+    validation: ValidationConfig = ValidationConfig()
     lagged_regressors: List[LaggedRegressorConfig] = []
-
-
-class ValidationConfig(CamelModel):
-    split: float = Field(ge=0.0, le=1.0, default=0.2)
-    modelConfig: ModelConfig
