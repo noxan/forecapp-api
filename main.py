@@ -92,10 +92,12 @@ def validate(dataset: Dataset, configuration: ModelConfig):
     # If not doing autoregression then this has columns ds, y, yhat1, yhat1 2.5%, yhat 97.5% and then columns for each component
     # If doing autoregression with n_lags = i then ds, y, yhat1, ..., yhati, yhat1 2.5%, ..., yhati 2.5%, yhat1 97.5%, ..., yhati 97.5%, components
     predictions = m.predict(df)
+    print(predictions.columns)
 
     if is_autoregression:
-        latest_preds = m.get_latest_forecast(prediction, include_history_data=True)
-        prediction_df = pd.concat([predictions, latest_preds], axis=1)
+        # latest_preds = m.get_latest_forecast(prediction, include_history_data=True)
+        # prediction_df = pd.concat([predictions, latest_preds], axis=1)
+        prediction_df = predictions
     else:
         prediction_df = predictions
 
