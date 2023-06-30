@@ -100,7 +100,7 @@ def validate(dataset: Dataset, configuration: ModelConfig):
         prediction_df = predictions
 
     param_fig = m.plot_parameters(plotting_backend="plotly")
-    comp_fig = m.plot_components(plotting_backend="plotly")
+    comp_fig = m.plot_components(prediction_df, plotting_backend="plotly")
 
     return {
         "status": "ok",
@@ -218,7 +218,7 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     # TODO: Sort df_fcst columns by name or something
 
     param_fig = m.plot_parameters(plotting_backend="plotly")
-    comp_fig = m.plot_components(plotting_backend="plotly")
+    comp_fig = m.plot_components(df_fcst, plotting_backend="plotly")
 
     return {
         "status": "ok",
