@@ -49,9 +49,10 @@ def prep_data(dataset: Dataset):
 
 
 @app.post("/validate")
-def validate(dataset: Dataset, validationConfig: ValidationConfig):
+def validate(dataset: Dataset, configuration: ModelConfig):
     df = prep_data(dataset)
-    config = validationConfig.modelConfig
+
+    config = configuration
 
     is_autoregression = config.autoregression.lags > 0
 
@@ -72,10 +73,12 @@ def validate(dataset: Dataset, validationConfig: ValidationConfig):
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
         # quantiles
-        quantiles=[0.025, 0.975],
+        quantiles=[
+            (100 - config.validation.confidenceLevel) / 100,
+            config.validation.confidenceLevel / 100,
+        ],
     )
-
-    train_df, test_df = m.split_df(df=df, valid_p=validationConfig.split)
+    train_df, test_df = m.split_df(df=df, valid_p=(config.validation.testSplit / 100))
     train_metrics = m.fit(
         df=train_df,
         checkpointing=False,
@@ -90,21 +93,24 @@ def validate(dataset: Dataset, validationConfig: ValidationConfig):
     predictions = m.predict(df)
 
     if is_autoregression:
-        latest_preds = m.get_latest_forecast(prediction, include_history_data=True)
-        prediction_df = pd.concat([predictions, latest_preds], axis=1)
+        # latest_preds = m.get_latest_forecast(prediction, include_history_data=True)
+        # prediction_df = pd.concat([predictions, latest_preds], axis=1)
+        prediction_df = predictions
     else:
         prediction_df = predictions
 
-    fig = m.plot_parameters(plotting_backend="plotly")
+    param_fig = m.plot_parameters(plotting_backend="plotly")
+    comp_fig = m.plot_components(prediction_df, plotting_backend="plotly")
 
     return {
         "status": "ok",
-        "validationConfiguration": validationConfig,
+        "configuration": config,
         "prediction": prediction_df.replace({np.nan: None}).to_dict(),
         "trainMetrics": train_metrics.replace({np.nan: None}).to_dict(),
         "testMetrics": test_metrics.replace({np.nan: None}).to_dict(),
         "explainable": {
-            "parameters": json.loads(plotly.io.to_json(fig)),
+            "parameters": json.loads(plotly.io.to_json(param_fig)),
+            "components": json.loads(plotly.io.to_json(comp_fig)),
         },
     }
 
@@ -133,7 +139,10 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         learning_rate=config.training.learning_rate,
         batch_size=config.training.batch_size,
         # quantiles
-        quantiles=[0.025, 0.975],
+        quantiles=[
+            (100 - config.validation.confidenceLevel) / 100,
+            config.validation.confidenceLevel / 100,
+        ],
     )
 
     first = True
@@ -208,8 +217,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         df_fcst = fcst
     # TODO: Sort df_fcst columns by name or something
 
-    fig = m.plot_parameters(plotting_backend="plotly")
-    # fig2 = m.plot_components(fcst, plotting_backend="plotly")
+    param_fig = m.plot_parameters(plotting_backend="plotly")
+    comp_fig = m.plot_components(df_fcst, plotting_backend="plotly")
 
     return {
         "status": "ok",
@@ -217,8 +226,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
         "explainable": {
-            "parameters": json.loads(plotly.io.to_json(fig)),
-            # "components": json.loads(plotly.io.to_json(fig2)),
+            "parameters": json.loads(plotly.io.to_json(param_fig)),
+            "components": json.loads(plotly.io.to_json(comp_fig)),
         },
     }
 
