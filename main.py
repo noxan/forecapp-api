@@ -99,7 +99,8 @@ def validate(dataset: Dataset, configuration: ModelConfig):
     else:
         prediction_df = predictions
 
-    fig = m.plot_parameters(plotting_backend="plotly")
+    param_fig = m.plot_parameters(plotting_backend="plotly")
+    comp_fig = m.plot_components(plotting_backend="plotly")
 
     return {
         "status": "ok",
@@ -108,7 +109,8 @@ def validate(dataset: Dataset, configuration: ModelConfig):
         "trainMetrics": train_metrics.replace({np.nan: None}).to_dict(),
         "testMetrics": test_metrics.replace({np.nan: None}).to_dict(),
         "explainable": {
-            "parameters": json.loads(plotly.io.to_json(fig)),
+            "parameters": json.loads(plotly.io.to_json(param_fig)),
+            "components": json.loads(plotly.io.to_json(comp_fig)),
         },
     }
 
@@ -215,8 +217,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         df_fcst = fcst
     # TODO: Sort df_fcst columns by name or something
 
-    fig = m.plot_parameters(plotting_backend="plotly")
-    # fig2 = m.plot_components(fcst, plotting_backend="plotly")
+    param_fig = m.plot_parameters(plotting_backend="plotly")
+    comp_fig = m.plot_components(plotting_backend="plotly")
 
     return {
         "status": "ok",
@@ -224,8 +226,8 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
         "forecast": df_fcst.replace({np.nan: None}).to_dict(),
         "metrics": metrics.replace({np.nan: None}).to_dict(),
         "explainable": {
-            "parameters": json.loads(plotly.io.to_json(fig)),
-            # "components": json.loads(plotly.io.to_json(fig2)),
+            "parameters": json.loads(plotly.io.to_json(param_fig)),
+            "components": json.loads(plotly.io.to_json(comp_fig)),
         },
     }
 
