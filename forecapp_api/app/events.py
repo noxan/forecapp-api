@@ -1,5 +1,5 @@
 import pandas as pd
-from app.config import EventItem
+from forecapp_api.app.config import EventItem
 
 
 def create_event_dataframe(event_name: str, event: EventItem):

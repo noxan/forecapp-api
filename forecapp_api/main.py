@@ -1,5 +1,5 @@
 import json
-
+import uvicorn
 import numpy as np
 import pandas as pd
 import plotly
@@ -8,8 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from neuralprophet import NeuralProphet, set_log_level
 
-from app.config import Dataset, ModelConfig, ValidationConfig
-from app.events import create_event_dataframe
+from forecapp_api.app.config import Dataset, ModelConfig, ValidationConfig
+from forecapp_api.app.events import create_event_dataframe
 
 sentry_sdk.init(
     dsn="https://5849277f70ea4dbdba8ce47bbbe1b552@o4504138709139456.ingest.sentry.io/4504138710253568",
@@ -17,9 +17,6 @@ sentry_sdk.init(
     # We recommend adjusting this value in production,
     traces_sample_rate=1.0,
 )
-
-set_log_level("WARNING")
-
 
 app = FastAPI()
 
@@ -232,7 +229,11 @@ def prediction(dataset: Dataset, configuration: ModelConfig):
     }
 
 
-if __name__ == "__main__":
-    import uvicorn
+def run(port: int = 8000, log_level: str = "INFO") -> None:
+    """Run the API server."""
+    set_log_level(log_level)
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    run(log_level="WARNING")
